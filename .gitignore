@@ -20,6 +20,7 @@ parts/
 sdist/
 var/
 wheels/
+.DS_Store
 share/python-wheels/
 *.egg-info/
 .installed.cfg
@@ -164,3 +165,4 @@ cython_debug/
 .idea/misc.xml
 .idea/inspectionProfiles/Project_Default.xml
 .idea/inspectionProfiles/profiles_settings.xml
+vosk-model-small-ru-0.22/.DS_Store
