@@ -1,1 +1,1 @@
-class Auto():
+class Program():
