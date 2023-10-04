@@ -5,6 +5,12 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+import os
+import sys
+
+# Указываем путь до root-папки проекта Django
+# Путь относительно файла conf.py
+sys.path.insert(0, os.path.abspath('./../../'))
 
 project = 'TPRO-project'
 copyright = '2023, Kate Marhytina, Leonid Chashkin, Kirill Padalitsa, Alex Stepchenko'

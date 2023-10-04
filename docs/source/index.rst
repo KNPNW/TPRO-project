@@ -3,27 +3,22 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to TPRO-project's documentation!
-========================================
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
 Документация TPRO-project
-======================
+=================================
 
-.. toctree::
+.. toctree:: ./about.rst
+   :maxdepth: 2
+   :caption: О программе
+
+.. toctree:: ./tz.rst
+   :maxdepth: 2
+   :caption: Техническое задание
+
+Ниже представлен пользовательский интерфейс программы:
+
+.. image:: ./img.png
+   :alt: Интерфейс
+
+.. toctree:: ./main.rst
    :maxdepth: 2
    :caption: Документация
-
-   ./main.rst
