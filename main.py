@@ -67,6 +67,19 @@ class Program():
         self.txt['yscrollcommand'] = self.sb.set
         self.window.mainloop()
 
+    def save_file(self):
+        """
+        Функция сохранения файла в формате *.txt
+        """
+        f = fd.asksaveasfile(
+            title='Сохранить как',
+            initialdir=os.getcwd(),
+            filetypes=[('Text files', '*.txt')])
+        text = self.txt.get(1.0, tk.END)
+        f.write(text)
+        f.close()
+
+
 if __name__ == "__main__":
     window = tk.Tk()
     Program(window)
