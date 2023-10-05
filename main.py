@@ -169,6 +169,12 @@ class Program():
             self.txt.insert(1.0, result)
             self.txt.configure(state=tk.DISABLED)
 
+    def close_app(self):
+        """
+        Функция завершающая работу приложения
+        """
+        self.window.destroy()
+
 if __name__ == "__main__":
     window = tk.Tk()
     Program(window)
