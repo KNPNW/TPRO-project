@@ -79,6 +79,14 @@ class Program():
         f.write(text)
         f.close()
 
+    def show_info(self):
+        """
+        Функция выводящая сведения 'О программе'
+        """
+        mb.showinfo(title='О программе', \
+                    message='"Программа создана в рамках дисциплины ТПРО"'
+                            '\n©Чашкин, Падалица, Маршутина, Степченко')
+
 
 if __name__ == "__main__":
     window = tk.Tk()
