@@ -1,28 +1,21 @@
-import tkinter as tk
-import os
-import torch
 import json
+import os
+import threading
+import tkinter as tk
+import wave
 from tkinter import filedialog as fd
 from tkinter import messagebox as mb
-import threading
-import wave
+
 import numpy as np
+import torch
 from vosk import Model, KaldiRecognizer, SpkModel, SetLogLevel
 
 SetLogLevel(-1)
 
-"""
-Система представляет собой программный комплекс и предназначена для распознавания речи с аудиоматериала,
-определения спикеров и расстановки знаков препинания.
-Программное обеспечение представляет собой сочетание программной части и графического интерфейса.
-Программа может быть использована для распознавания голосовых сообщений пользователей социальных сетей,
-расшифровки аудиоматериалов конференций/собраний/лекций/публичных выступлений и создания субтитров.
-
-"""
 
 class Program():
     """
-    Программа для перевода аудио файла в текст
+    Программа для перевода аудио файла в текст2
 
     Класс предоставляет набор функций и графический интерфейс для реализации программы по транскрибации,
     диаризации и расстановки знаков препинания в тексте из аудио файла в формате wav и сохранения его в txt.
@@ -42,6 +35,7 @@ class Program():
         self.window = window
         self.window.title('TPRO-project')
         self.window.geometry('600x350')
+        self.window.minsize(600,350)
         self.menubar = tk.Menu(self.window)
         self.filemenu = tk.Menu(self.menubar, tearoff=0)
         self.filemenu.add_command(label='Сохранить текст', command=self.save_file)
@@ -52,7 +46,7 @@ class Program():
         self.lb = tk.Label(text='Имя файла (.wav)')
         self.lb.grid(column=0, row=0)
         self.file = tk.Entry(self.window, width=60)
-        self.file.grid(column=1, row=0)
+        self.file.grid(column=1, sticky="NSEW", row=0)
         self.btn_load = tk.Button(self.window, text='Открыть файл', command=self.select_file)
         self.btn_load.grid(column=2, row=0)
         self.btn_start = tk.Button(self.window, text='Преобразовать', command=self.loading)
@@ -60,32 +54,28 @@ class Program():
         self.lb = tk.Label(text='Выберите файл и нажмите "Преобразовать"')
         self.lb.grid(column=0, row=2, columnspan=2)
         self.txt = tk.Text(height=15, width=50, wrap=tk.WORD, state=tk.DISABLED)
-        self.txt.grid(column=0, row=3, columnspan=3)
+        self.txt.grid(column=0, row=3, columnspan=3, sticky="NSEW")
         self.sb = tk.Scrollbar(window, orient=tk.VERTICAL)
-        self.sb.grid(column=2, row=3, sticky='ns')
+        self.sb.grid(column=4, row=3, sticky='ns')
         self.sb.config(command=self.txt.yview)
         self.txt['yscrollcommand'] = self.sb.set
+        self.window.columnconfigure(1, weight=1)
+        self.window.rowconfigure(3, weight=1)
         self.window.mainloop()
 
-    def save_file(self):
-        """
-        Функция сохранения файла в формате *.txt
-        """
-        f = fd.asksaveasfile(
-            title='Сохранить как',
-            initialdir=os.getcwd(),
-            filetypes=[('Text files', '*.txt')])
-        text = self.txt.get(1.0, tk.END)
-        f.write(text)
-        f.close()
 
-    def show_info(self):
+
+    def cosine_dist(self, x, y):
         """
-        Функция выводящая сведения 'О программе'
+        Функия вычисляющая косинусовое расстояние
+
+        :param x: Массив заначений
+        :param y: Массив заначений
+        :return: Возращает результат в виде числа
         """
-        mb.showinfo(title='О программе', \
-                    message='"Программа создана в рамках дисциплины ТПРО"'
-                            '\n©Чашкин, Падалица, Маршутина, Степченко')
+        nx = np.array(x)
+        ny = np.array(y)
+        return 1 - np.dot(nx, ny) / np.linalg.norm(nx) / np.linalg.norm(ny)
 
     def analyze(self):
         """
@@ -169,11 +159,51 @@ class Program():
             self.txt.insert(1.0, result)
             self.txt.configure(state=tk.DISABLED)
 
+    def loading(self):
+        """
+        Функция загрузки
+        """
+        self.lb.configure(text='Загрузка...')
+        x = threading.Thread(target=self.analyze)
+        x.start()
+
+    def select_file(self):
+        """
+        Функция выбора файла в формате wav
+        """
+        filename = fd.askopenfilename(
+            title='Открыть звуковой файл',
+            initialdir=os.getcwd(),
+            filetypes=[('Sound files ', '*.wav')])
+        self.file.delete(0, tk.END)
+        self.file.insert(0, filename)
+
+    def save_file(self):
+        """
+        Функция сохранения файла в формате txt
+        """
+        f = fd.asksaveasfile(
+            title='Сохранить как',
+            initialdir=os.getcwd(),
+            filetypes=[('Text files', '*.txt')])
+        text = self.txt.get(1.0, tk.END)
+        f.write(text)
+        f.close()
+
+    def show_info(self):
+        """
+        Функция выводящая сведения 'О программе'
+        """
+        mb.showinfo(title='О программе', \
+                    message='"Программа создана в рамках дисциплины ТРПО"'
+                            '\n©Чашкин, Падалица, Маршутина, Степченко')
+
     def close_app(self):
         """
         Функция завершающая работу приложения
         """
         self.window.destroy()
+
 
 if __name__ == "__main__":
     window = tk.Tk()
