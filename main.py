@@ -33,7 +33,7 @@ class Program():
 
     def __init__(self, window):
         self.window = window
-        self.window.title('TPRO-project')
+        self.window.title('TRPO-project')
         self.window.geometry('600x350')
         self.window.minsize(600,350)
         self.menubar = tk.Menu(self.window)

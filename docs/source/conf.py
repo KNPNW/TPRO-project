@@ -12,7 +12,7 @@ import sys
 # Путь относительно файла conf.py
 sys.path.insert(0, os.path.abspath('./../../'))
 
-project = 'TPRO-project'
+project = 'TRPO-project'
 copyright = '2023, Kate Marhytina, Leonid Chashkin, Kirill Padalitsa, Alex Stepchenko'
 author = 'Kate Marhytina, Leonid Chashkin, Kirill Padalitsa, Alex Stepchenko'
 release = '1'
@@ -27,7 +27,7 @@ extensions = [
 templates_path = ['_templates']
 exclude_patterns = []
 
-language = 'TPRO-project'
+language = 'TRPO-project'
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
