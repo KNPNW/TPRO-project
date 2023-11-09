@@ -40,7 +40,7 @@ class Program():
 
     def __init__(self, window):
         self.window = window
-        self.window.title('TPRO-project')
+        self.window.title('TRPO-project')
         self.window.geometry('600x350')
         self.menubar = tk.Menu(self.window)
         self.filemenu = tk.Menu(self.menubar, tearoff=0)
@@ -84,7 +84,7 @@ class Program():
         Функция выводящая сведения 'О программе'
         """
         mb.showinfo(title='О программе', \
-                    message='"Программа создана в рамках дисциплины ТПРО"'
+                    message='"Программа создана в рамках дисциплины ТРПО"'
                             '\n©Чашкин, Падалица, Маршутина, Степченко')
 
     def analyze(self):
