@@ -69,7 +69,7 @@ class Program():
 
     def save_file(self):
         """
-        Функция сохранения файла в формате *.txt
+        Функция сохранения файла в формате \*.txt
         """
         f = fd.asksaveasfile(
             title='Сохранить как',
