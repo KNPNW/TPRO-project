@@ -65,7 +65,8 @@ class Program():
 
 
 
-    def cosine_dist(self, x, y):
+    @staticmethod
+    def cosine_dist(x, y):
         """
         Функия вычисляющая косинусовое расстояние
 
