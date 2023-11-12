@@ -102,6 +102,7 @@ class Program():
         return wf
 
 
+    @profile
     def analyze(self):
         """
         Функция производящая анализ аудио файла
