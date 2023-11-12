@@ -80,6 +80,17 @@ class Program():
         ny = np.array(y)
         return 1 - np.dot(nx, ny) / np.linalg.norm(nx) / np.linalg.norm(ny)
 
+
+    @staticmethod
+    def open_wav(filename: str) -> wave.Wave_read:
+        try:
+            wf = wave.open(filename, "rb")
+        except Exception as e:
+            raise e
+
+        return wf
+
+
     def analyze(self):
         """
         Функция производящая анализ аудио файла
@@ -91,76 +102,77 @@ class Program():
         :return:
         """
         filename = self.file.get()
-        prev_speaker = ''
-        prev_speaker_text = ''
-        model = Model("vosk-model-small-ru-0.22")
-        spk_model = SpkModel("vosk-model-spk-0.4")
         try:
-            wf = wave.open(filename, "rb")
-        except BaseException as e:
+            self.wf = self.open_wav(filename)
+        except Exception:
             mb.showerror(title='Ошибка', message='Ошибка чтения файла')
             self.lb.configure(text='Ошибка. Попробуйте выбрать другой файл.')
             window.update_idletasks()
             return
-        else:
-            rcgn_fr = wf.getframerate() * wf.getnchannels()
-            rec = KaldiRecognizer(model, rcgn_fr, spk_model)
-            rec.SetSpkModel(spk_model)
-            model, example_texts, languages, punct, apply_te = torch.hub.load(repo_or_dir='snakers4/silero-models',
-                                                                              model='silero_te')
-            result = ''
-            speakers = dict()
-            last_n = False
-            read_block_size = 4000
-            wf.rewind()
-            # read_block_size = wf.getnframes()
-            i = 0
-            j = 0
-            while True:  # Можно читать файл блоками, тогда можно выводить распознанный текст частями, но слова на границе блоков могут быть распознаны некорректно
-                if i % 20 == 0:
-                    self.lb.configure(text='Загрузка' + '.' * (j % 4))
-                    j = j + 1
-                    window.update_idletasks()
-                data = wf.readframes(read_block_size)
-                if len(data) == 0:
-                    break
-                if rec.AcceptWaveform(data):
-                    res = json.loads(rec.Result())
-                    is_speaker = False
-                    if 'spk' in res:
-                        spk = res['spk']
-                        for speaker, vect in speakers.items():
-                            if self.cosine_dist(vect, spk) < 0.85:
-                                current_speaker = speaker
-                                is_speaker = True
-                                break
-                        if not is_speaker:
-                            current_speaker = f'Спикер {len(speakers) + 1}'
-                            speakers[current_speaker] = spk
-                    if res['text'] != '':
-                        if not prev_speaker == current_speaker:
-                            if prev_speaker_text:
-                                new_res = apply_te(prev_speaker_text, lan='ru')
-                                result += f"{prev_speaker}:\n{new_res}\n"
-                            prev_speaker_text = res['text']
-                        else:
-                            prev_speaker_text += f"\n{res['text']}"
-                        prev_speaker = current_speaker
-                        last_n = False
-                    elif not last_n:
-                        result += '\n'
-                        last_n = True
-                i = i + 1
-            res = json.loads(rec.FinalResult())
-            prev_speaker_text += f" {res['text']}"
-            new_res = apply_te(prev_speaker_text, lan='ru')
-            if prev_speaker_text:
-                result += f"{prev_speaker}:\n{new_res}\n"
-            self.lb.configure(text='Готово')
-            self.txt.configure(state=tk.NORMAL)
-            self.txt.delete(1.0, tk.END)
-            self.txt.insert(1.0, result)
-            self.txt.configure(state=tk.DISABLED)
+
+        prev_speaker = ''
+        prev_speaker_text = ''
+        model = Model("vosk-model-small-ru-0.22")
+        spk_model = SpkModel("vosk-model-spk-0.4")
+        rcgn_fr = self.wf.getframerate() * self.wf.getnchannels()
+        rec = KaldiRecognizer(model, rcgn_fr, spk_model)
+        rec.SetSpkModel(spk_model)
+        model, example_texts, languages, punct, apply_te = torch.hub.load(repo_or_dir='snakers4/silero-models',
+                                                                          model='silero_te')
+        result = ''
+        current_speaker = ''
+        speakers = dict()
+        last_n = False
+        read_block_size = 4000
+        self.wf.rewind()
+        # read_block_size = self.wf.getnframes()
+        i = 0
+        j = 0
+        while True:  # Можно читать файл блоками, тогда можно выводить распознанный текст частями, но слова на границе блоков могут быть распознаны некорректно
+            if i % 20 == 0:
+                self.lb.configure(text='Загрузка' + '.' * (j % 4))
+                j = j + 1
+                window.update_idletasks()
+            data = self.wf.readframes(read_block_size)
+            if len(data) == 0:
+                break
+            if rec.AcceptWaveform(data):
+                res = json.loads(rec.Result())
+                is_speaker = False
+                if 'spk' in res:
+                    spk = res['spk']
+                    for speaker, vect in speakers.items():
+                        if self.cosine_dist(vect, spk) < 0.85:
+                            current_speaker = speaker
+                            is_speaker = True
+                            break
+                    if not is_speaker:
+                        current_speaker = f'Спикер {len(speakers) + 1}'
+                        speakers[current_speaker] = spk
+                if res['text'] != '':
+                    if not prev_speaker == current_speaker:
+                        if prev_speaker_text:
+                            new_res = apply_te(prev_speaker_text, lan='ru')
+                            result += f"{prev_speaker}:\n{new_res}\n"
+                        prev_speaker_text = res['text']
+                    else:
+                        prev_speaker_text += f"\n{res['text']}"
+                    prev_speaker = current_speaker
+                    last_n = False
+                elif not last_n:
+                    result += '\n'
+                    last_n = True
+            i = i + 1
+        res = json.loads(rec.FinalResult())
+        prev_speaker_text += f" {res['text']}"
+        new_res = apply_te(prev_speaker_text, lan='ru')
+        if prev_speaker_text:
+            result += f"{prev_speaker}:\n{new_res}\n"
+        self.lb.configure(text='Готово')
+        self.txt.configure(state=tk.NORMAL)
+        self.txt.delete(1.0, tk.END)
+        self.txt.insert(1.0, result)
+        self.txt.configure(state=tk.DISABLED)
 
     def loading(self):
         """
