@@ -3,6 +3,7 @@ import os
 import threading
 import tkinter as tk
 import wave
+import cProfile
 from tkinter import filedialog as fd
 from tkinter import messagebox as mb
 
@@ -11,6 +12,16 @@ import torch
 from vosk import Model, KaldiRecognizer, SpkModel, SetLogLevel
 
 SetLogLevel(-1)
+
+
+def profile(func):
+    """Decorator for run function profile"""
+    def wrapper(*args, **kwargs):
+        profiler = cProfile.Profile()
+        result = profiler.runcall(func, *args, **kwargs)
+        profiler.print_stats(sort="cumulative")
+        return result
+    return wrapper
 
 
 class Program():
