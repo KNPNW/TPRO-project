@@ -61,8 +61,10 @@ class Program():
         self.txt['yscrollcommand'] = self.sb.set
         self.window.columnconfigure(1, weight=1)
         self.window.rowconfigure(3, weight=1)
-        self.window.mainloop()
 
+
+    def run(self):
+        self.window.mainloop()
 
 
     @staticmethod
@@ -208,4 +210,5 @@ class Program():
 
 if __name__ == "__main__":
     window = tk.Tk()
-    Program(window)
+    p = Program(window)
+    p.run()
