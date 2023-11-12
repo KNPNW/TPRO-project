@@ -1,6 +1,6 @@
 from pytest import approx
 
-from main import Program
+from program.main import Program
 
 
 def test_cosine_dist():
