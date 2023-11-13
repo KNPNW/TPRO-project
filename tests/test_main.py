@@ -1,6 +1,6 @@
-from pytest import approx
+from pytest import approx, raises
 
-from main import Program
+from program.main import Program
 
 
 def test_cosine_dist():
@@ -23,3 +23,12 @@ def test_cosine_dist():
     x = [-2, 3]
     y = [5, 7]
     assert Program.cosine_dist(x, y) == approx(0.645346)
+
+
+def test_open_wav_file_not_found():
+    with raises(FileNotFoundError):
+        _ = Program.open_wav('')
+
+
+def test_open_wav_existing_file():
+    _ = Program.open_wav('tests/test.wav')
